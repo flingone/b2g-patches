@@ -1,0 +1,16 @@
+diff --git a/gecko/widget/gonk/nativewindow/GonkNativeWindowJB.cpp b/gecko/widget/gonk/nativewindow/GonkNativeWindowJB.cpp
+index a7bd4b1..6ce5a0e 100755
+--- a/gecko/widget/gonk/nativewindow/GonkNativeWindowJB.cpp
++++ b/gecko/widget/gonk/nativewindow/GonkNativeWindowJB.cpp
+@@ -165,7 +165,11 @@ void GonkNativeWindow::onFrameAvailable() {
+ void CameraGraphicBuffer::Unlock() {
+     if (mLocked) {
+         android::sp<android::Fence> fence;
++#if ANDROID_VERSION >= 18
+         fence = mReleaseFenceHandle.IsValid() ? mReleaseFenceHandle.mFence : Fence::NO_FENCE;
++#else
++        fence = Fence::NO_FENCE;
++#endif
+         // The window might have been destroyed. The buffer is no longer
+         // valid at that point.
+         sp<GonkNativeWindow> window = mNativeWindow.promote();
