@@ -1,0 +1,13 @@
+diff --git a/gecko/widget/gonk/libdisplay/GonkDisplayJB.cpp b/gecko/widget/gonk/libdisplay/GonkDisplayJB.cpp
+index 7ab251a..00364c6 100644
+--- a/gecko/widget/gonk/libdisplay/GonkDisplayJB.cpp
++++ b/gecko/widget/gonk/libdisplay/GonkDisplayJB.cpp
+@@ -59,7 +59,7 @@ GonkDisplayJB::GonkDisplayJB()
+ 	 xdpi = mFBDevice->xdpi;
+         /* The emulator actually reports RGBA_8888, but EGL doesn't return
+          * any matching configuration. We force RGBX here to fix it. */
+-        surfaceformat = HAL_PIXEL_FORMAT_RGBX_8888;
++        surfaceformat = HAL_PIXEL_FORMAT_BGRA_8888;
+     }
+ 
+     err = hw_get_module(HWC_HARDWARE_MODULE_ID, &mModule);
