@@ -1,0 +1,19 @@
+diff --git a/gaia/apps/communications/ftu/js/tutorial.js b/gaia/apps/communications/ftu/js/tutorial.js
+index 16cc515..8ff055a 100644
+--- a/gaia/apps/communications/ftu/js/tutorial.js
++++ b/gaia/apps/communications/ftu/js/tutorial.js
+@@ -84,12 +84,12 @@ var Tutorial = {
+      * But for large devices, because the flow totally got changed with
+      * latest UX design, we leave that part in manageStep
+      */
+-    if (this.layout === 'tiny') {
++    //if (this.layout === 'tiny') {
+       this.tutorialFinish.addEventListener('click', function ftuEnd() {
+         self.tutorialFinish.removeEventListener('click', ftuEnd);
+         self.exit();
+       });
+-    }
++    //}
+   },
+   exit: function() {
+     WifiManager.finish();
