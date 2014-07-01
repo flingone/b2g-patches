@@ -1,0 +1,19 @@
+diff --git a/gaia/apps/system/js/internet_sharing.js b/gaia/apps/system/js/internet_sharing.js
+index 77943c6..123b154 100644
+--- a/gaia/apps/system/js/internet_sharing.js
++++ b/gaia/apps/system/js/internet_sharing.js
+@@ -104,10 +104,10 @@ var InternetSharing = (function() {
+     var type = (evt.settingName.indexOf('wifi') > -1) ? 'wifi' : 'usb';
+     var cardId = (IccHelper.iccInfo && IccHelper.iccInfo.iccid) || 'absent';
+     // wifi hotspot cannot be enabled without sim
+-    if ('wifi' === type && 'absent' === cardId && true === evt.settingValue) {
+-      settings.createLock().set({'tethering.wifi.enabled': false});
+-      return;
+-    }
++    //if ('wifi' === type && 'absent' === cardId && true === evt.settingValue) {
++    //  settings.createLock().set({'tethering.wifi.enabled': false});
++    //  return;
++    //}
+     asyncStorage.setItem('tethering.' + type + '.simstate.card-' + cardId,
+                          evt.settingValue);
+   }
