@@ -1,8 +1,11 @@
 diff --git a/gecko/widget/gonk/nsAppShell.cpp b/gecko/widget/gonk/nsAppShell.cpp
-index cc83c15..ee5df2d 100644
+index cc83c15..cbd6b55 100644
 --- a/gecko/widget/gonk/nsAppShell.cpp
 +++ b/gecko/widget/gonk/nsAppShell.cpp
-@@ -22,6 +22,7 @@
+@@ -19,12 +19,13 @@
+ #define _GNU_SOURCE
+ #endif
+ 
  #include <dirent.h>
  #include <errno.h>
  #include <fcntl.h>
@@ -10,7 +13,13 @@ index cc83c15..ee5df2d 100644
  #include <signal.h>
  #include <sys/epoll.h>
  #include <sys/ioctl.h>
-@@ -73,6 +74,11 @@
+ #include <sys/param.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
+@@ -70,12 +71,17 @@
+ 
+ #include "GeckoProfiler.h"
+ 
  // Defines kKeyMapping and GetKeyNameIndex()
  #include "GonkKeyMapping.h"
  
@@ -22,7 +31,13 @@ index cc83c15..ee5df2d 100644
  #define LOG(args...)                                            \
      __android_log_print(ANDROID_LOG_INFO, "Gonk" , ## args)
  #ifdef VERBOSE_LOG_ENABLED
-@@ -465,13 +471,72 @@ class GeckoPointerController : public PointerControllerInterface {
+ # define VERBOSE_LOG(args...)                           \
+     __android_log_print(ANDROID_LOG_INFO, "Gonk" , ## args)
+ #else
+@@ -462,19 +468,78 @@ updateHeadphoneSwitch()
+ 
+ class GeckoPointerController : public PointerControllerInterface {
+     float mX;
      float mY;
      int32_t mButtonState;
      InputReaderConfiguration* mConfig;
@@ -96,7 +111,34 @@ index cc83c15..ee5df2d 100644
  
      virtual bool getBounds(float* outMinX, float* outMinY,
              float* outMaxX, float* outMaxY) const;
-@@ -512,6 +577,12 @@ GeckoPointerController::move(float deltaX, float deltaY)
+     virtual void move(float deltaX, float deltaY);
+     virtual void setButtonState(int32_t buttonState);
+     virtual int32_t getButtonState() const;
+@@ -483,12 +548,20 @@ public:
+     virtual void fade(Transition transition) {}
+     virtual void unfade(Transition transition) {}
+     virtual void setPresentation(Presentation presentation) {}
+     virtual void setSpots(const PointerCoords* spotCoords, const uint32_t* spotIdToIndex,
+             BitSet32 spotIdBits) {}
+     virtual void clearSpots() {}
++    virtual ~GeckoPointerController() {
++        if (mFbHandler >= 0) {
++            int cursor_en = 0;
++            ioctl(mFbHandler, FBIOPUT_SET_CURSOR_EN, &cursor_en);
++            close(mFbHandler);
++            mFbHandler = -1;
++        }
++    }
+ };
+ 
+ bool
+ GeckoPointerController::getBounds(float* outMinX,
+                                   float* outMinY,
+                                   float* outMaxX,
+@@ -509,12 +582,18 @@ GeckoPointerController::move(float deltaX, float deltaY)
+ {
+     float minX, minY, maxX, maxY;
+     getBounds(&minX, &minY, &maxX, &maxY);
  
      mX = clamped(mX + deltaX, minX, maxX);
      mY = clamped(mY + deltaY, minY, maxY);
@@ -109,3 +151,6 @@ index cc83c15..ee5df2d 100644
  }
  
  void
+ GeckoPointerController::setButtonState(int32_t buttonState)
+ {
+     mButtonState = buttonState;
