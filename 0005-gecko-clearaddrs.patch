@@ -1,0 +1,80 @@
+diff --git a/gecko/dom/system/gonk/NetworkUtils.cpp b/gecko/dom/system/gonk/NetworkUtils.cpp
+index 59534d31..d6ab9be 100644
+--- a/gecko/dom/system/gonk/NetworkUtils.cpp
++++ b/gecko/dom/system/gonk/NetworkUtils.cpp
+@@ -120,12 +120,13 @@ CommandFunc NetworkUtils::sWifiEnableChain[] = {
+   NetworkUtils::enableNat,
+   NetworkUtils::wifiTetheringSuccess
+ };
+ 
+ CommandFunc NetworkUtils::sWifiDisableChain[] = {
+   NetworkUtils::clearWifiTetherParms,
++  NetworkUtils::clearAddrs,
+   NetworkUtils::stopSoftAP,
+   NetworkUtils::stopAccessPointDriver,
+   NetworkUtils::wifiFirmwareReload,
+   NetworkUtils::untetherInterface,
+   NetworkUtils::preTetherInterfaceList,
+   NetworkUtils::postTetherInterfaceList,
+@@ -134,19 +135,21 @@ CommandFunc NetworkUtils::sWifiDisableChain[] = {
+   NetworkUtils::stopTethering,
+   NetworkUtils::wifiTetheringSuccess
+ };
+ 
+ CommandFunc NetworkUtils::sWifiFailChain[] = {
+   NetworkUtils::clearWifiTetherParms,
++  NetworkUtils::clearAddrs,
+   NetworkUtils::stopSoftAP,
+   NetworkUtils::setIpForwardingEnabled,
+   NetworkUtils::stopTethering
+ };
+ 
+ CommandFunc NetworkUtils::sWifiRetryChain[] = {
+   NetworkUtils::clearWifiTetherParms,
++  NetworkUtils::clearAddrs,
+   NetworkUtils::stopSoftAP,
+   NetworkUtils::stopTethering,
+ 
+   // sWifiEnableChain:
+   NetworkUtils::wifiFirmwareReload,
+   NetworkUtils::startAccessPointDriver,
+@@ -597,12 +600,21 @@ void NetworkUtils::startSoftAP(CommandChain* aChain,
+                                NetworkResultOptions& aResult)
+ {
+   const char* command= "softap startap";
+   doCommand(command, aChain, aCallback);
+ }
+ 
++void NetworkUtils::clearAddrs(CommandChain* aChain,
++                              CommandCallback aCallback,
++                              NetworkResultOptions& aResult)
++{
++  char command[MAX_COMMAND_SIZE];
++  snprintf(command, MAX_COMMAND_SIZE - 1, "interface clearaddrs %s", GET_CHAR(mIfname));
++  doCommand(command, aChain, aCallback);
++}
++
+ void NetworkUtils::stopSoftAP(CommandChain* aChain,
+                               CommandCallback aCallback,
+                               NetworkResultOptions& aResult)
+ {
+   const char* command= "softap stopap";
+   doCommand(command, aChain, aCallback);
+diff --git a/gecko/dom/system/gonk/NetworkUtils.h b/gecko/dom/system/gonk/NetworkUtils.h
+index bd722fa..41e9f62 100644
+--- a/gecko/dom/system/gonk/NetworkUtils.h
++++ b/gecko/dom/system/gonk/NetworkUtils.h
+@@ -313,12 +313,13 @@ private:
+   static void stopAccessPointDriver(PARAMS);
+   static void setAccessPoint(PARAMS);
+   static void cleanUpStream(PARAMS);
+   static void createUpStream(PARAMS);
+   static void startSoftAP(PARAMS);
+   static void stopSoftAP(PARAMS);
++  static void clearAddrs(PARAMS);
+   static void clearWifiTetherParms(PARAMS);
+   static void getRxBytes(PARAMS);
+   static void getTxBytes(PARAMS);
+   static void enableAlarm(PARAMS);
+   static void disableAlarm(PARAMS);
+   static void setQuota(PARAMS);
