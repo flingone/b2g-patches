@@ -8,7 +8,7 @@ index 04caefb..94afcee 100644
      eglSwapBuffers(dpy, sur);
 -    return Post(mFBSurface->lastHandle, mFBSurface->GetPrevFBAcquireFd());
 +    //return Post(mFBSurface->lastHandle, mFBSurface->GetPrevFBAcquireFd());
-+    return Post(mFBSurface->lastHandle, -1);
++    return true;
  }
  
  bool
