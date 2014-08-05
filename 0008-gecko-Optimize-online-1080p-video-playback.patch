@@ -1,0 +1,86 @@
+From b2df18dec32d705f53608d38bc3d6fd8fbf76852 Mon Sep 17 00:00:00 2001
+From: Fling One <onefling8@gmail.com>
+Date: Tue, 5 Aug 2014 14:50:59 +0800
+Subject: [PATCH] Optimize online 1080p video playback
+
+Change from three aspects:
+a) move media cache to /tmp, a ram based filesystem
+b) change media cache size from 4MB to 32MB
+c) download 30s data before suspend data channel
+
+These tuning parameters are got in LAN environments
+
+Signed-off-by: Fling One <onefling8@gmail.com>
+---
+ gecko/b2g/app/b2g.js               |    2 +-
+ gecko/content/media/MediaCache.cpp |   16 +++++++++++++---
+ 2 files changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/gecko/b2g/app/b2g.js b/gecko/b2g/app/b2g.js
+index a15ff82..ebc4cad 100644
+--- a/gecko/b2g/app/b2g.js
++++ b/gecko/b2g/app/b2g.js
+@@ -307,13 +307,13 @@ pref("notification.feature.enabled", true);
+ // IndexedDB
+ pref("dom.indexedDB.warningQuota", 5);
+ 
+ // prevent video elements from preloading too much data
+ pref("media.preload.default", 1); // default to preload none
+ pref("media.preload.auto", 2);    // preload metadata if preload=auto
+-pref("media.cache_size", 4096);    // 4MB media cache
++pref("media.cache_size", 32768);   // 32MB media cache
+ 
+ // The default number of decoded video frames that are enqueued in
+ // MediaDecoderReader's mVideoQueue.
+ pref("media.video-queue.default-size", 3);
+ 
+ // optimize images' memory usage
+diff --git a/gecko/content/media/MediaCache.cpp b/gecko/content/media/MediaCache.cpp
+index c9b2fd9..d976e87 100644
+--- a/gecko/content/media/MediaCache.cpp
++++ b/gecko/content/media/MediaCache.cpp
+@@ -55,13 +55,13 @@ static const uint32_t REPLAY_PENALTY_FACTOR = 3;
+ // store runs of stream blocks close-to-consecutively in the cache if we
+ // can.
+ static const uint32_t FREE_BLOCK_SCAN_LIMIT = 16;
+ 
+ // Try to save power by not resuming paused reads if the stream won't need new
+ // data within this time interval in the future
+-static const uint32_t CACHE_POWERSAVE_WAKEUP_LOW_THRESHOLD_MS = 10000;
++static const uint32_t CACHE_POWERSAVE_WAKEUP_LOW_THRESHOLD_MS = 30000;
+ 
+ #ifdef DEBUG
+ // Turn this on to do very expensive cache state validation
+ // #define DEBUG_VERIFY_CACHE
+ #endif
+ 
+@@ -574,14 +574,24 @@ nsresult
+ MediaCache::Init()
+ {
+   NS_ASSERTION(NS_IsMainThread(), "Only call on main thread");
+   NS_ASSERTION(!mFileCache, "Cache file already open?");
+ 
+   PRFileDesc* fileDesc = nullptr;
+-  nsresult rv = NS_OpenAnonymousTemporaryFile(&fileDesc);
+-  NS_ENSURE_SUCCESS(rv,rv);
++  nsresult rv;
++
++  nsAutoCString name("/tmp/mozilla-temp-");
++  name.AppendInt(rand());
++
++  fileDesc = PR_Open(name.get(), PR_RDWR | PR_CREATE_FILE, PR_IRWXU);
++  if (fileDesc != 0)
++    PR_Delete(name.get());
++  else {
++    rv = NS_OpenAnonymousTemporaryFile(&fileDesc);
++    NS_ENSURE_SUCCESS(rv,rv);
++  }
+ 
+   mFileCache = new FileBlockCache();
+   rv = mFileCache->Open(fileDesc);
+   NS_ENSURE_SUCCESS(rv,rv);
+ 
+ #ifdef PR_LOGGING
+-- 
+1.7.9.5
+
