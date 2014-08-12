@@ -1,0 +1,57 @@
+diff --git a/gecko/content/media/MediaDecoderReader.cpp b/gecko/content/media/MediaDecoderReader.cpp
+index 6411bb9..a60e3b3 100644
+--- a/gecko/content/media/MediaDecoderReader.cpp
++++ b/gecko/content/media/MediaDecoderReader.cpp
+@@ -223,13 +223,13 @@ nsresult MediaDecoderReader::DecodeToTarget(int64_t aTarget)
+                                                            video->mDuration);
+         video = temp;
+       }
+       
+       // If the frame end time is less than the seek target, we won't want
+       // to display this frame after the seek, so discard it.
+-      if (video && video->GetEndTime() <= aTarget) {
++      if (video && (llabs(video->GetEndTime() - aTarget) > 1000000)) {
+         DECODER_LOG(PR_LOG_DEBUG,
+                     ("MediaDecoderReader::DecodeToTarget(%lld) pop video frame [%lld, %lld]",
+                      aTarget, video->mTime, video->GetEndTime()));
+         VideoQueue().PopFront();
+       } else {
+         // Found a frame after or encompasing the seek target.
+diff --git a/gecko/content/media/MediaDecoderStateMachine.cpp b/gecko/content/media/MediaDecoderStateMachine.cpp
+index e7e5744..8c8ec06 100644
+--- a/gecko/content/media/MediaDecoderStateMachine.cpp
++++ b/gecko/content/media/MediaDecoderStateMachine.cpp
+@@ -1949,13 +1949,13 @@ void MediaDecoderStateMachine::DecodeSeek()
+       // while we seek, since the seek reads, which could block on I/O.
+       res = mReader->Seek(seekTime,
+                           mStartTime,
+                           mEndTime,
+                           mediaTime);
+ 
+-      if (NS_SUCCEEDED(res) && mSeekTarget.mType == SeekTarget::Accurate) {
++      if (NS_SUCCEEDED(res)) {
+         res = mReader->DecodeToTarget(seekTime);
+       }
+     }
+ 
+     if (NS_SUCCEEDED(res)) {
+       int64_t nextSampleStartTime = 0;
+diff --git a/gecko/content/media/omx/MediaOmxReader.cpp b/gecko/content/media/omx/MediaOmxReader.cpp
+index 8960fa8..6c680d4 100644
+--- a/gecko/content/media/omx/MediaOmxReader.cpp
++++ b/gecko/content/media/omx/MediaOmxReader.cpp
+@@ -389,13 +389,13 @@ nsresult MediaOmxReader::Seek(int64_t aTarget, int64_t aStartTime, int64_t aEndT
+     // seconds. So if we have both audio and video, we must seek the video
+     // stream to the preceeding keyframe first, get the stream time, and then
+     // seek the audio stream to match the video stream's time. Otherwise, the
+     // audio and video streams won't be in sync after the seek.
+     mVideoSeekTimeUs = aTarget;
+     const VideoData* v = DecodeToFirstVideoData();
+-    mAudioSeekTimeUs = v ? v->mTime : aTarget;
++    mAudioSeekTimeUs = v && (llabs(v->mTime - aTarget) < 1000000) ? v->mTime : aTarget;
+   } else {
+     mAudioSeekTimeUs = mVideoSeekTimeUs = aTarget;
+   }
+ 
+   return NS_OK;
+ }
