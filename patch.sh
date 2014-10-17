@@ -1,3 +1,4 @@
+if ls patches/*.patch >/dev/null 2>&1 ; then
 echo =============== begin to patch source code ===============
 for i in patches/*.patch
 do
@@ -20,3 +21,4 @@ do
 	fi
 done
 echo =============== finished patch source code ===============
+fi
