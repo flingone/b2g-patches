@@ -1,0 +1,14 @@
+diff --git a/gaia/apps/ftu/js/ui.js b/gaia/apps/ftu/js/ui.js
+index ad13d4b..360e0ba 100644
+--- a/gaia/apps/ftu/js/ui.js
++++ b/gaia/apps/ftu/js/ui.js
+@@ -209,7 +209,8 @@ var UIManager = {
+         window.close();
+       } else {
+         // for large devices
+-        FinishScreen.init();
++        //FinishScreen.init();
++        window.close();
+       }
+     };
+ 
