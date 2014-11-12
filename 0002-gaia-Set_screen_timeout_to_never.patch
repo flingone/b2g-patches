@@ -1,0 +1,18 @@
+diff --git a/gaia/build/settings.js b/gaia/build/settings.js
+index 58e5b4e..504e2c8 100644
+--- a/gaia/build/settings.js
++++ b/gaia/build/settings.js
+@@ -269,12 +269,13 @@ function execute(config) {
+ 
+   if (config.NO_LOCK_SCREEN) {
+     settings['screen.timeout'] = 0;
+     settings['lockscreen.enabled'] = false;
+     settings['lockscreen.locked'] = false;
+   }
++  settings['screen.timeout'] = 0;
+ 
+   setDefaultKeyboardLayouts(config.GAIA_DEFAULT_LOCALE, settings, config);
+ 
+   var queue = utils.Q.defer();
+   queue.resolve();
+ 
