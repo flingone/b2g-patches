@@ -1,0 +1,10 @@
+diff --git a/gonk-misc/default-gecko-config b/gonk-misc/default-gecko-config
+index 73cd177..d71c063 100644
+--- a/gonk-misc/default-gecko-config
++++ b/gonk-misc/default-gecko-config
+@@ -81,3 +81,5 @@ if [ "$TARGET_BUILD_VARIANT" = eng ]; then
+   # the profiler enabled by default
+   ac_add_options --enable-profiling
+ fi
++
++ac_add_options --disable-content-sandbox
