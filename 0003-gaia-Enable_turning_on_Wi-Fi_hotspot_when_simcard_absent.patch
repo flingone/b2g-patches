@@ -1,0 +1,33 @@
+diff --git a/gaia/apps/system/js/internet_sharing.js b/gaia/apps/system/js/internet_sharing.js
+index b6d2f97..0a8d401 100644
+--- a/gaia/apps/system/js/internet_sharing.js
++++ b/gaia/apps/system/js/internet_sharing.js
+@@ -157,20 +157,20 @@
+           buttonText = 'ok';
+           message = 'noHopspotWhenAPMisOn';
+ 
+           ModalDialog.alert(title, message, { title: buttonText });
+           settings.createLock().set({'tethering.wifi.enabled': false});
+           return;
+-        } else if ('absent' === cardId && true === evt.settingValue) {
+-          title = 'noSimCard';
+-          buttonText = 'ok';
+-          message = 'noSIMCardInHotspot';
+-
+-          ModalDialog.alert(title, message, { title: buttonText });
+-          settings.createLock().set({'tethering.wifi.enabled': false});
+-          return;
++       // } else if ('absent' === cardId && true === evt.settingValue) {
++       //   title = 'noSimCard';
++       //   buttonText = 'ok';
++       //   message = 'noSIMCardInHotspot';
++
++       //   ModalDialog.alert(title, message, { title: buttonText });
++       //   settings.createLock().set({'tethering.wifi.enabled': false});
++       //   return;
+         }
+       }
+       asyncStorage.setItem('tethering.' + type + '.simstate.card-' + cardId,
+                            evt.settingValue);
+     },
+ 
