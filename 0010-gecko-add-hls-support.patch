@@ -1,0 +1,90 @@
+diff --git a/gecko/content/media/MediaResource.h b/gecko/content/media/MediaResource.h
+index dd56211..0765296 100644
+--- a/gecko/content/media/MediaResource.h
++++ b/gecko/content/media/MediaResource.h
+@@ -231,12 +231,15 @@ public:
+   // we dispatch an event to the main thread to delete the MediaResource.
+   // Note that this means it's safe for references to this object to be
+   // released on a non main thread, but the destructor will always run on
+   // the main thread.
+   NS_DECL_THREADSAFE_ISUPPORTS
+ 
++  // Add for http live streaming.
++  virtual nsIURI * GetURI() { return nullptr; };
++
+   // The following can be called on the main thread only:
+   // Get the URI
+   virtual nsIURI* URI() const { return nullptr; }
+   // Close the resource, stop any listeners, channels, etc.
+   // Cancels any currently blocking Read request and forces that request to
+   // return an error.
+@@ -428,12 +431,13 @@ private:
+   void Destroy();
+ };
+ 
+ class BaseMediaResource : public MediaResource {
+ public:
+   virtual nsIURI* URI() const { return mURI; }
++  virtual nsIURI * GetURI() { return mURL; }
+   virtual void MoveLoadsToBackground();
+ 
+   virtual size_t SizeOfExcludingThis(
+                   MallocSizeOf aMallocSizeOf) const MOZ_OVERRIDE
+   {
+     // Might be useful to track in the future:
+@@ -459,13 +463,14 @@ protected:
+                     nsIURI* aURI,
+                     const nsACString& aContentType) :
+     mDecoder(aDecoder),
+     mChannel(aChannel),
+     mURI(aURI),
+     mContentType(aContentType),
+-    mLoadInBackground(false)
++    mLoadInBackground(false),
++    mURL(aURI)
+   {
+     MOZ_COUNT_CTOR(BaseMediaResource);
+     NS_ASSERTION(!mContentType.IsEmpty(), "Must know content type");
+   }
+   virtual ~BaseMediaResource()
+   {
+@@ -504,12 +509,14 @@ protected:
+   // is safe.
+   const nsAutoCString mContentType;
+ 
+   // True if MoveLoadsToBackground() has been called, i.e. the load event
+   // has been fired, and all channel loads will be in the background.
+   bool mLoadInBackground;
++
++  nsIURI* mURL;
+ };
+ 
+ /**
+  * This is the MediaResource implementation that wraps Necko channels.
+  * Much of its functionality is actually delegated to MediaCache via
+  * an underlying MediaCacheStream.
+diff --git a/gecko/content/media/omx/MediaStreamSource.h b/gecko/content/media/omx/MediaStreamSource.h
+index 10e0103..30b7547 100644
+--- a/gecko/content/media/omx/MediaStreamSource.h
++++ b/gecko/content/media/omx/MediaStreamSource.h
+@@ -39,12 +39,20 @@ public:
+   }
+   virtual status_t getSize(off64_t *size);
+   virtual uint32_t flags() {
+     return kWantsPrefetching;
+   }
+ 
++  virtual const char *getPath() {
++    nsIURI* uri = mResource->GetURI();
++
++    nsCString spec;
++    uri->GetSpec(spec);
++    return spec.get();
++ }
++
+   virtual ~MediaStreamSource();
+ 
+ private:
+   MediaStreamSource(const MediaStreamSource &);
+   MediaStreamSource &operator=(const MediaStreamSource &);
+ };
