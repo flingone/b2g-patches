@@ -1,0 +1,61 @@
+diff --git a/gecko/content/media/omx/OmxDecoder.cpp b/gecko/content/media/omx/OmxDecoder.cpp
+index 5a4c3ac..e392875 100644
+--- a/gecko/content/media/omx/OmxDecoder.cpp
++++ b/gecko/content/media/omx/OmxDecoder.cpp
+@@ -944,12 +944,13 @@ bool OmxDecoder::ReadAudio(AudioFrame *aFrame, int64_t aSeekTimeUs)
+ 
+   return true;
+ }
+ 
+ nsresult OmxDecoder::Play()
+ {
++#if 0
+   if (!mVideoPaused && !mAudioPaused) {
+     return NS_OK;
+   }
+ 
+   if (mVideoPaused && mVideoSource.get() && mVideoSource->start() != OK) {
+     return NS_ERROR_UNEXPECTED;
+@@ -957,13 +958,13 @@ nsresult OmxDecoder::Play()
+   mVideoPaused = false;
+ 
+   if (mAudioPaused && mAudioSource.get() && mAudioSource->start() != OK) {
+     return NS_ERROR_UNEXPECTED;
+   }
+   mAudioPaused = false;
+-
++#endif
+   return NS_OK;
+ }
+ 
+ // AOSP didn't give implementation on OMXCodec::Pause() and not define
+ // OMXCodec::Start() should be called for resuming the decoding. Currently
+ // it is customized by a specific open source repository only.
+@@ -977,12 +978,13 @@ void OmxDecoder::Pause()
+   /* The implementation of OMXCodec::pause is flawed.
+    * OMXCodec::start will not restore from the paused state and result in
+    * buffer timeout which causes timeouts in mochitests.
+    * Since there is not power consumption problem in emulator, we will just
+    * return when running in emulator to fix timeouts in mochitests.
+    */
++#if 0
+   if (isInEmulator()) {
+     return;
+   }
+ 
+   if (mVideoPaused || mAudioPaused) {
+     return;
+@@ -992,12 +994,13 @@ void OmxDecoder::Pause()
+     mVideoPaused = true;
+   }
+ 
+   if (mAudioSource.get() && mAudioSource->pause() == OK) {
+     mAudioPaused = true;
+   }
++#endif
+ }
+ 
+ // Called on ALooper thread.
+ void OmxDecoder::onMessageReceived(const sp<AMessage> &msg)
+ {
+   switch (msg->what()) {
