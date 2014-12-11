@@ -1,0 +1,47 @@
+diff --git a/gecko/b2g/app/b2g.js b/b2g/app/b2g.js
+index 63e8615..b63f650 100644
+--- a/gecko/b2g/app/b2g.js
++++ b/gecko/b2g/app/b2g.js
+@@ -318,7 +318,7 @@ pref("dom.indexedDB.warningQuota", 5);
+ // prevent video elements from preloading too much data
+ pref("media.preload.default", 1); // default to preload none
+ pref("media.preload.auto", 2);    // preload metadata if preload=auto
+-pref("media.cache_size", 4096);    // 4MB media cache
++pref("media.cache_size", 32768);    // 4MB media cache
+ #ifdef MOZ_FMP4
+ // Enable/Disable Gonk Decoder Module
+ pref("media.fragmented-mp4.gonk.enabled", false);
+diff --git a/gecko/content/media/MediaCache.cpp b/gecko/content/media/MediaCache.cpp
+index bbf679a..0556a2f 100644
+--- a/gecko/content/media/MediaCache.cpp
++++ b/gecko/content/media/MediaCache.cpp
+@@ -58,7 +58,7 @@ static const uint32_t FREE_BLOCK_SCAN_LIMIT = 16;
+ 
+ // Try to save power by not resuming paused reads if the stream won't need new
+ // data within this time interval in the future
+-static const uint32_t CACHE_POWERSAVE_WAKEUP_LOW_THRESHOLD_MS = 10000;
++static const uint32_t CACHE_POWERSAVE_WAKEUP_LOW_THRESHOLD_MS = 30000;
+ 
+ #ifdef DEBUG
+ // Turn this on to do very expensive cache state validation
+@@ -577,8 +577,18 @@ MediaCache::Init()
+   NS_ASSERTION(!mFileCache, "Cache file already open?");
+ 
+   PRFileDesc* fileDesc = nullptr;
+-  nsresult rv = NS_OpenAnonymousTemporaryFile(&fileDesc);
+-  NS_ENSURE_SUCCESS(rv,rv);
++  nsresult rv;
++
++  nsAutoCString name("/tmp/mozilla-temp-");
++  name.AppendInt(rand());
++
++  fileDesc = PR_Open(name.get(), PR_RDWR | PR_CREATE_FILE, PR_IRWXU);
++  if (fileDesc != 0)
++      PR_Delete(name.get());
++  else {
++      rv = NS_OpenAnonymousTemporaryFile(&fileDesc);
++      NS_ENSURE_SUCCESS(rv,rv);
++  }
+ 
+   mFileCache = new FileBlockCache();
+   rv = mFileCache->Open(fileDesc);
