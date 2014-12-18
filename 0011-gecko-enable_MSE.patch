@@ -1,0 +1,19 @@
+diff --git a/gecko/modules/libpref/init/all.js b/gecko/modules/libpref/init/all.js
+index 555ab39..44bc3ba 100644
+--- a/gecko/modules/libpref/init/all.js
++++ b/gecko/modules/libpref/init/all.js
+@@ -394,13 +394,13 @@ pref("media.webvtt.enabled", true);
+ pref("media.webvtt.regions.enabled", false);
+ 
+ // AudioTrack and VideoTrack support
+ pref("media.track.enabled", false);
+ 
+ // Whether to enable MediaSource support
+-pref("media.mediasource.enabled", false);
++pref("media.mediasource.enabled", true);
+ 
+ #ifdef MOZ_WEBSPEECH
+ pref("media.webspeech.recognition.enable", false);
+ pref("media.webspeech.synth.enabled", false);
+ #endif
+ #ifdef MOZ_WEBM_ENCODER
