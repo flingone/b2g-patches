@@ -1,0 +1,80 @@
+diff --git a/gecko/content/media/fmp4/gonk/GonkMediaDataDecoder.cpp b/gecko/content/media/fmp4/gonk/GonkMediaDataDecoder.cpp
+index a9c9135..0fb97e8 100644
+--- a/gecko/content/media/fmp4/gonk/GonkMediaDataDecoder.cpp
++++ b/gecko/content/media/fmp4/gonk/GonkMediaDataDecoder.cpp
+@@ -29,12 +29,13 @@ GonkMediaDataDecoder::GonkMediaDataDecoder(GonkDecoderManager* aManager,
+                                            MediaTaskQueue* aTaskQueue,
+                                            MediaDataDecoderCallback* aCallback)
+   : mTaskQueue(aTaskQueue)
+   , mCallback(aCallback)
+   , mManager(aManager)
+   , mSignaledEOS(false)
++  , mDrainComplete(false)
+ {
+   MOZ_COUNT_CTOR(GonkMediaDataDecoder);
+ }
+ 
+ GonkMediaDataDecoder::~GonkMediaDataDecoder()
+ {
+@@ -42,12 +43,13 @@ GonkMediaDataDecoder::~GonkMediaDataDecoder()
+ }
+ 
+ nsresult
+ GonkMediaDataDecoder::Init()
+ {
+   mDecoder = mManager->Init(mCallback);
++  mDrainComplete = false;
+   return mDecoder.get() ? NS_OK : NS_ERROR_UNEXPECTED;
+ }
+ 
+ nsresult
+ GonkMediaDataDecoder::Shutdown()
+ {
+@@ -86,13 +88,13 @@ GonkMediaDataDecoder::ProcessDecode(mp4_demuxer::MP4Sample* aSample)
+ 
+ void
+ GonkMediaDataDecoder::ProcessOutput()
+ {
+   nsAutoPtr<MediaData> output;
+   nsresult rv;
+-  while (true) {
++  while (true && !mDrainComplete) {
+     rv = mManager->Output(mLastStreamOffset, output);
+     if (rv == NS_OK) {
+       mCallback->Output(output.forget());
+       continue;
+     } else if (rv == NS_ERROR_NOT_AVAILABLE && mSignaledEOS) {
+       // Try to get more frames before getting EOS frame
+@@ -114,12 +116,13 @@ GonkMediaDataDecoder::ProcessOutput()
+     if (rv == NS_ERROR_ABORT) {
+       if (output.get() != nullptr) {
+         mCallback->Output(output.forget());
+       }
+       mCallback->DrainComplete();
+       mSignaledEOS = false;
++      mDrainComplete = true;
+       return;
+     }
+     mCallback->Error();
+   }
+ }
+ 
+diff --git a/gecko/content/media/fmp4/gonk/GonkMediaDataDecoder.h b/gecko/content/media/fmp4/gonk/GonkMediaDataDecoder.h
+index bb6a5e9..53a9d9e 100644
+--- a/gecko/content/media/fmp4/gonk/GonkMediaDataDecoder.h
++++ b/gecko/content/media/fmp4/gonk/GonkMediaDataDecoder.h
+@@ -89,11 +89,14 @@ private:
+ 
+   // The last offset into the media resource that was passed into Input().
+   // This is used to approximate the decoder's position in the media resource.
+   int64_t mLastStreamOffset;
+   // Set it ture when there is no input data
+   bool mSignaledEOS;
++
++  //fix gecko do not exit when out of data.
++  bool mDrainComplete;
+ };
+ 
+ } // namespace mozilla
+ 
+ #endif // GonkMediaDataDecoder_h_
