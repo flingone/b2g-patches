@@ -64,10 +64,10 @@ index dd56211..0765296 100644
   * Much of its functionality is actually delegated to MediaCache via
   * an underlying MediaCacheStream.
 diff --git a/gecko/content/media/omx/MediaStreamSource.h b/gecko/content/media/omx/MediaStreamSource.h
-index 10e0103..30b7547 100644
+index 10e0103..7bfd74e 100644
 --- a/gecko/content/media/omx/MediaStreamSource.h
 +++ b/gecko/content/media/omx/MediaStreamSource.h
-@@ -39,12 +39,20 @@ public:
+@@ -39,12 +39,23 @@ public:
    }
    virtual status_t getSize(off64_t *size);
    virtual uint32_t flags() {
@@ -76,6 +76,9 @@ index 10e0103..30b7547 100644
  
 +  virtual const char *getPath() {
 +    nsIURI* uri = mResource->GetURI();
++    if (! uri) {
++      return "--- uri is null ---";
++    }
 +
 +    nsCString spec;
 +    uri->GetSpec(spec);
