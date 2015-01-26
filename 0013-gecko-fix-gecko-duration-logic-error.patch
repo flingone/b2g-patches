@@ -1,0 +1,23 @@
+diff --git a/gecko/content/media/MediaDecoder.cpp b/gecko/content/media/MediaDecoder.cpp
+index 2d1fe01..85e3c5d 100644
+--- a/gecko/content/media/MediaDecoder.cpp
++++ b/gecko/content/media/MediaDecoder.cpp
+@@ -712,16 +712,18 @@ void MediaDecoder::MetadataLoaded(MediaInfo* aInfo, MetadataTags* aTags)
+     }
+     mDuration = mDecoderStateMachine ? mDecoderStateMachine->GetDuration() : -1;
+     // Duration has changed so we should recompute playback rate
+     UpdatePlaybackRate();
+   }
+ 
+   if (mDuration == -1) {
+     SetInfinite(true);
++  } else {
++    SetInfinite(false);
+   }
+ 
+   mInfo = aInfo;
+   ConstructMediaTracks();
+ 
+   if (mOwner) {
+     // Make sure the element and the frame (if any) are told about
+     // our new size.
