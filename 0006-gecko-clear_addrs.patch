@@ -13,9 +13,10 @@ index df438c5..c331ad2 100644
  CommandFunc NetworkUtils::sWifiDisableChain[] = {
    NetworkUtils::clearWifiTetherParms,
 +  NetworkUtils::clearAddrs,
++  NetworkUtils::wifiFirmwareReload,
    NetworkUtils::stopSoftAP,
    NetworkUtils::stopAccessPointDriver,
-   NetworkUtils::wifiFirmwareReload,
+-  NetworkUtils::wifiFirmwareReload,
    NetworkUtils::untetherInterface,
    NetworkUtils::preTetherInterfaceList,
    NetworkUtils::postTetherInterfaceList,
