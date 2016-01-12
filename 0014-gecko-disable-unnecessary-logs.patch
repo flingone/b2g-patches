@@ -1,0 +1,23 @@
+diff --git a/gecko/widget/gonk/libdisplay/FramebufferSurface.cpp b/gecko/widget/gonk/libdisplay/FramebufferSurface.cpp
+index 219e9be..650cc3b 100644
+--- a/gecko/widget/gonk/libdisplay/FramebufferSurface.cpp
++++ b/gecko/widget/gonk/libdisplay/FramebufferSurface.cpp
+@@ -166,17 +166,17 @@ status_t FramebufferSurface::setReleaseFenceFd(int fenceFd) {
+     }
+     return err;
+ }
+ 
+ int FramebufferSurface::GetPrevFBAcquireFd() {
+     if (mPrevFBAcquireFence.get() && mPrevFBAcquireFence->isValid()) {
+         return mPrevFBAcquireFence->dup();
+     }
+-    ALOGE("GetPrevFBAcquireFd: FB acquire fence is invalid!");
++    //ALOGE("GetPrevFBAcquireFd: FB acquire fence is invalid!");
+     return -1;
+ }
+ 
+ status_t FramebufferSurface::setUpdateRectangle(const Rect& r)
+ {
+     return INVALID_OPERATION;
+ }
+ 
