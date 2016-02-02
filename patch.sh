@@ -20,5 +20,8 @@ do
 		echo -e "\033[01;32msuccess\033[00m"
 	fi
 done
+
+echo =============== copy fonts ===============
+cp -rf patches/fonts/* external/moztt/
 echo =============== finished patch source code ===============
 fi

@@ -1,0 +1,21 @@
+diff --git a/external/moztt/fonts.mk b/external/moztt/fonts.mk
+index 3f4dd4f..03b883f 100644
+--- a/external/moztt/fonts.mk
++++ b/external/moztt/fonts.mk
+@@ -72,6 +72,16 @@ PRODUCT_COPY_FILES += \
+     external/moztt/Roboto-20120823/Roboto-BoldItalic.ttf:system/fonts/Roboto-BoldItalic.ttf \
+     external/moztt/Roboto-20120823/Roboto-Italic.ttf:system/fonts/Roboto-Italic.ttf \
+     external/moztt/Roboto-20120823/Roboto-Regular.ttf:system/fonts/Roboto-Regular.ttf \
++    external/moztt/OpenSans-1.10/OpenSans-Bold.ttf:system/fonts/OpenSans-Bold.ttf \
++    external/moztt/OpenSans-1.10/OpenSans-BoldItalic.ttf:system/fonts/OpenSans-BoldItalic.ttf \
++    external/moztt/OpenSans-1.10/OpenSans-ExtraBold.ttf:system/fonts/OpenSans-ExtraBold.ttf \
++    external/moztt/OpenSans-1.10/OpenSans-ExtraBoldItalic.ttf:system/fonts/OpenSans-ExtraBoldItalic.ttf \
++    external/moztt/OpenSans-1.10/OpenSans-Italic.ttf:system/fonts/OpenSans-Italic.ttf \
++    external/moztt/OpenSans-1.10/OpenSans-Light.ttf:system/fonts/OpenSans-Light.ttf \
++    external/moztt/OpenSans-1.10/OpenSans-LightItalic.ttf:system/fonts/OpenSans-LightItalic.ttf \
++    external/moztt/OpenSans-1.10/OpenSans-Regular.ttf:system/fonts/OpenSans-Regular.ttf \
++    external/moztt/OpenSans-1.10/OpenSans-Semibold.ttf:system/fonts/OpenSans-Semibold.ttf \
++    external/moztt/OpenSans-1.10/OpenSans-SemiboldItalic.ttf:system/fonts/OpenSans-SemiboldItalic.ttf \
+     $(NULL)
+ 
+ # FiraSans faces that we omit because they have weights that are not multiples of 100:
